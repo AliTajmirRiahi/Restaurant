@@ -24,7 +24,6 @@ namespace Restaurant.Presentation.Controllers.Orders
 
 
         [HttpPost(Name = "AddOrder")]
-        [Validator(ValidatorType_Order.Basic, "orderDto")]
         public async Task<IActionResult> AddOrder(OrderDto orderDto)
         {
             var order = _mapper.CustomMapOrderDtoToOrder(orderDto);

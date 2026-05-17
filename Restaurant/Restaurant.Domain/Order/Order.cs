@@ -61,7 +61,7 @@ namespace Restaurant.Domain.Order
                 InitializeStateMachine(this.Status);
 
             _stateMachine!.Machine.Fire(trigger);
-            Status = _stateMachine.Machine.State; // وضعیت دیتابیس را آپدیت می‌کنیم
+            Status = _stateMachine.Machine.State; 
         }
 
         public void Accept() => Fire(OrderTrigger.Accept);
@@ -76,17 +76,14 @@ namespace Restaurant.Domain.Order
             if (_stateMachine == null)
                 InitializeStateMachine(this.Status);
 
-            // گرفتن اولین trigger معتبر برای وضعیت فعلی
             var permittedTriggers = _stateMachine!.Machine.PermittedTriggersAsync.Result.ToList();
 
             if (permittedTriggers.Count == 0)
                 throw new InvalidOperationException("No next state available.");
 
-            // فرض می‌کنیم اولین trigger را اجرا کنیم
             var nextTrigger = permittedTriggers.First();
             _stateMachine.Machine.Fire(nextTrigger);
 
-            // آپدیت وضعیت دیتابیس
             Status = _stateMachine.Machine.State;
         }
     }
