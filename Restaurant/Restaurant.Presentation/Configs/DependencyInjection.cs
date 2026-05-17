@@ -4,6 +4,7 @@ using Arta.Domain.Core.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi;
 using Restaurant.Application;
 using Restaurant.Domain.Order;
 using Restaurant.Infrastructure.Persistence;
@@ -64,20 +65,19 @@ namespace Restaurant.Presentation
         {
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-                {
+                options.SwaggerDoc("v1", new OpenApiInfo {
                     Title = "Restaurant API",
                     Version = "v1",
                     Description = "This is the API documentation for the Restaurant system.",
-                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    Contact = new OpenApiContact
                     {
                         Name = "Support Team",
                         Email = "riahi.tajmir@gamil.com",
                         Url = new Uri("https://www.linkedin.com/in/ali-tajmir-riahi-532206170/")
                     },
                 });
+                //options.SwaggerDoc("v2", new OpenApiInfo { Title = "PixelForge V2", Version = "v2" });
             });
-
             return services;
         }
     }

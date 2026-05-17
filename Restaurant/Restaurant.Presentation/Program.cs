@@ -1,3 +1,4 @@
+using Microsoft.OpenApi;
 using Restaurant.Presentation;
 using System.Runtime.CompilerServices;
 
@@ -5,35 +6,132 @@ using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// =======================================================
+// 1) Configure Services (IOC Container)
+// =======================================================
 
+// -------------------------------------------------------
+// Logging
+// -------------------------------------------------------
+builder.Services.AddLogging();
+
+// -------------------------------------------------------
+// Controllers
+// -------------------------------------------------------
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// -------------------------------------------------------
+// OpenAPI (.NET 8–10 built-in)
+// -------------------------------------------------------
+builder.Services.AddOpenApi(); // exposes /openapi/v1.json
+
+// Swagger (Swashbuckle - existing setup)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwagger();
+builder.Services.AddSwagger(); 
 
+// -------------------------------------------------------
+// API Versioning
+// -------------------------------------------------------
+// TODO: Add API Versioning if needed
 
-// Call Infrastructure DI setup
+// -------------------------------------------------------
+// Health Checks
+// -------------------------------------------------------
+// TODO: builder.Services.AddHealthChecks();
+
+// -------------------------------------------------------
+// CORS
+// -------------------------------------------------------
+// TODO: Configure CORS policy
+
+// -------------------------------------------------------
+// Clean Architecture - DI Registrations
+// -------------------------------------------------------
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplications();
 builder.Services.AddRepositories();
 builder.Services.AddMappers();
 
+// -------------------------------------------------------
+// Http Client
+// -------------------------------------------------------
+builder.Services.AddHttpClient();
+
+
 var app = builder.Build();
 
+// =======================================================
+// 2) Configure Middleware Pipeline
+// =======================================================
+
+// -------------------------------------------------------
+// Global Exception Handling
+// -------------------------------------------------------
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Configure the HTTP request pipeline.
+// -------------------------------------------------------
+// HSTS (Production Only)
+// -------------------------------------------------------
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+}
+
+// -------------------------------------------------------
+// HTTPS Redirection
+// -------------------------------------------------------
+app.UseHttpsRedirection();
+
+// -------------------------------------------------------
+// CORS
+// -------------------------------------------------------
+// TODO: app.UseCors("Default");
+
+// -------------------------------------------------------
+// Routing
+// -------------------------------------------------------
+app.UseRouting();
+
+// -------------------------------------------------------
+// Authorization
+// -------------------------------------------------------
+app.UseAuthorization();
+
+
+// =======================================================
+// 3) OpenAPI & Swagger
+// =======================================================
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+// Built-in OpenAPI endpoint (available in all environments)
+app.MapOpenApi();
 
+
+// =======================================================
+// 4) Endpoint Mapping
+// =======================================================
+
+// Controllers
 app.MapControllers();
+
+// Health Checks
+// TODO: app.MapHealthChecks("/health");
+
+// Optional root endpoint
+// TODO: app.MapGet("/", () => "Restaurant API is running...");
+
+
+// =======================================================
+// 5) Run Application
+// =======================================================
 
 app.Run();
 
+
+// Required for Integration Testing
 public partial class Program { }
