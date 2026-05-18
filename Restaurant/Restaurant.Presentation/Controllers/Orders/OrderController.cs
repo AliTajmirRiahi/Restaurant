@@ -1,11 +1,11 @@
-using Restaurant.Infrastructure.Repositories;
-using Microsoft.AspNetCore.Mvc;
 using Arta.Base.Core.ApiResults;
+using Microsoft.AspNetCore.Mvc;
 using Restaurant.Application;
 using Restaurant.Domain.Contract.Order;
 using Restaurant.Domain.Order;
-using Restaurant.Infrastructure.Commons;
+using Restaurant.Domain.Order.Validators;
 using Restaurant.Presentation.Configs.ApiResults;
+using Restaurant.Presentation.Validators;
 
 namespace Restaurant.Presentation.Controllers.Orders
 {
@@ -24,6 +24,7 @@ namespace Restaurant.Presentation.Controllers.Orders
 
 
         [HttpPost(Name = "AddOrder")]
+        [Validator(typeof(OrderBasicValidator), "orderDto")]
         public async Task<IActionResult> AddOrder(OrderDto orderDto)
         {
             var order = _mapper.CustomMapOrderDtoToOrder(orderDto);

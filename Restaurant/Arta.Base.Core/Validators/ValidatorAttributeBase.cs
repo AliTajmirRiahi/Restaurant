@@ -1,22 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Arta.Base.Core.Validators
+namespace Arta.Base.Core.Validators;
+
+[AttributeUsage(AttributeTargets.Method)]
+public abstract class ValidatorAttributeBase : ActionFilterAttribute
 {
-    public abstract partial class ValidatorAttributeBase
+    protected readonly string ParameterName;
+
+    protected ValidatorAttributeBase(string parameterName)
     {
-        private readonly string _helpParameterName;
-        private Func<object, bool> _validate = default!;
-
-        protected ValidatorAttributeBase(string helpParameterName)
-        {
-            _helpParameterName = helpParameterName;
-        }
-
-        public Func<object, bool> Validate { get => _validate; set => _validate = value; }
+        ParameterName = parameterName;
     }
+
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (!context.ActionArguments.TryGetValue(ParameterName, out var value))
+            return;
+
+        Validate(value!);
+    }
+
+    protected abstract void Validate(object value);
 }
+

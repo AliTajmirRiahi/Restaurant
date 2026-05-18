@@ -1,60 +1,83 @@
 ﻿using Arta.Base.Core.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
+namespace Restaurant.Unit.Test.Framework.Base.Validators;
 
-namespace Restaurant.Unit.Test.Framework.Base.Validators
+/// <summary>
+/// Fake validator attribute used only for unit testing the base class behavior.
+/// </summary>
+public class FakeValidatorAttribute : ValidatorAttributeBase
 {
-    // کلاس Fake برای تست
-    public class FakeValidatorAttribute : ValidatorAttributeBase
+    public FakeValidatorAttribute(string helpParameterName)
+        : base(helpParameterName)
     {
-        public FakeValidatorAttribute(string helpParameterName)
-            : base(helpParameterName)
-        {
-        }
     }
 
-    public class ValidatorAttributeBaseTests
+    /// <summary>
+    /// Exposes the protected validation logic for unit tests.
+    /// </summary>
+    public void ExecuteValidation(object value)
     {
-        [Fact]
-        public void Validate_Should_Return_True_When_Function_Is_Set()
-        {
-            // Arrange
-            var attribute = new FakeValidatorAttribute("TestParam");
-            attribute.Validate = obj => obj is int i && i > 0;
+        Validate(value);
+    }
 
-            // Act
-            var result = attribute.Validate(5);
+    /// <summary>
+    /// Test-specific implementation of validation logic.
+    /// </summary>
+    protected override void Validate(object value)
+    {
+        if (value is int number && number > 0)
+            return;
 
-            // Assert
-            Assert.True(result);
-        }
+        throw new InvalidOperationException("Validation failed.");
+    }
+}
 
-        [Fact]
-        public void Validate_Should_Return_False_When_Function_Is_Set()
-        {
-            // Arrange
-            var attribute = new FakeValidatorAttribute("TestParam");
-            attribute.Validate = obj => obj is int i && i > 0;
 
-            // Act
-            var result = attribute.Validate(-10);
 
-            // Assert
-            Assert.False(result);
-        }
+/// <summary>
+/// Unit tests for FakeValidatorAttribute / ValidatorAttributeBase behavior.
+/// </summary>
+public class ValidatorAttributeBaseTests
+{
+    [Fact]
+    public void Validate_Should_Not_Throw_When_Input_Is_Valid()
+    {
+        // Arrange
+        var attribute = new FakeValidatorAttribute("TestParam");
 
-        [Fact]
-        public void Validate_Should_Throw_When_Not_Set()
-        {
-            // Arrange
-            var attribute = new FakeValidatorAttribute("TestParam");
+        // Act
+        var exception = Record.Exception(() => attribute.ExecuteValidation(5));
 
-            // Act & Assert
-            Assert.Throws<NullReferenceException>(() => attribute.Validate("anything"));
-        }
+        // Assert
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void Validate_Should_Throw_When_Input_Is_Invalid()
+    {
+        // Arrange
+        var attribute = new FakeValidatorAttribute("TestParam");
+
+        // Act
+        var exception = Record.Exception(() => attribute.ExecuteValidation(-10));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
+    }
+
+    [Fact]
+    public void Validate_Should_Throw_When_Input_Is_Not_Integer()
+    {
+        // Arrange
+        var attribute = new FakeValidatorAttribute("TestParam");
+
+        // Act
+        var exception = Record.Exception(() => attribute.ExecuteValidation("anything"));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<InvalidOperationException>(exception);
     }
 }
