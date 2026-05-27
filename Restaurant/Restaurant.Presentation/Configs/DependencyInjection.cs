@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi;
 using Restaurant.Application;
 using Restaurant.Domain.Order;
+using Restaurant.Domain.Order.Mappers;
 using Restaurant.Infrastructure.Persistence;
 using Restaurant.Infrastructure.Repositories;
 
@@ -29,7 +30,7 @@ namespace Restaurant.Presentation
         {
             // Add Applications
             services.Scan(scan => scan
-                    .FromAssemblyOf<OrderService>() // اسمبلی‌ای که سرویس‌هات توشه
+                    .FromAssemblyOf<OrderService>() // 
                     .AddClasses(classes => classes.AssignableTo<IApplicationService>())
                         .AsImplementedInterfaces()
                         .WithScopedLifetime());
@@ -51,15 +52,18 @@ namespace Restaurant.Presentation
 
         public static IServiceCollection AddMappers(this IServiceCollection services)
         {
-            // Scan assembly that contains the concrete repository implementations
             services.Scan(scan => scan
-                .FromAssemblyOf<Mapper>()   // Infrastructure assembly
-                .AddClasses(classes => classes.AssignableTo<IMapper>())
+                .FromAssemblyOf<MapperOrder>() 
+                .AddClasses(classes => classes.Where(type =>
+                    type.GetInterfaces().Any(i =>
+                        i.IsGenericType &&
+                        i.GetGenericTypeDefinition() == typeof(IMapper<,>))))
                 .AsImplementedInterfaces()
                 .WithScopedLifetime());
 
             return services;
         }
+
 
         public static IServiceCollection AddSwagger(this IServiceCollection services)
         {

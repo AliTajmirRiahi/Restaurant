@@ -2,7 +2,7 @@ using Arta.Base.Core.ApiResults;
 using Microsoft.AspNetCore.Mvc;
 using Restaurant.Application;
 using Restaurant.Domain.Contract.Order;
-using Restaurant.Domain.Order;
+using Restaurant.Domain.Order.Mappers;
 using Restaurant.Domain.Order.Validators;
 using Restaurant.Presentation.Configs.ApiResults;
 using Restaurant.Presentation.Validators;
@@ -27,7 +27,7 @@ namespace Restaurant.Presentation.Controllers.Orders
         [Validator(typeof(OrderBasicValidator), "orderDto")]
         public async Task<IActionResult> AddOrder(OrderDto orderDto)
         {
-            var order = _mapper.CustomMapOrderDtoToOrder(orderDto);
+            var order = _mapper.ToEntity(orderDto);
 
             var result = await _orderService.AddAsync(order);
 

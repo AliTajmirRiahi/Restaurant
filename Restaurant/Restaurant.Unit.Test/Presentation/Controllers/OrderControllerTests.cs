@@ -4,6 +4,7 @@ using Moq;
 using Restaurant.Application;
 using Restaurant.Domain.Contract.Order;
 using Restaurant.Domain.Order;
+using Restaurant.Domain.Order.Mappers;
 using Restaurant.Presentation.Configs.ApiResults;
 using Restaurant.Presentation.Controllers.Orders;
 using System;
@@ -34,7 +35,7 @@ namespace Restaurant.Unit.Test.Presentation.Controllers
                 .ReturnsAsync(expectedOrderId);
 
             var mapperMock = new Mock<IMapperOrder>();
-            mapperMock.Setup(m => m.CustomMapOrderDtoToOrder(orderDto))
+            mapperMock.Setup(m => m.ToEntity(orderDto))
                 .Returns(order);
 
             var controller = new OrderController(serviceMock.Object, mapperMock.Object);
@@ -49,7 +50,7 @@ namespace Restaurant.Unit.Test.Presentation.Controllers
             Assert.Equal(expectedOrderId, apiResult.Payload!.Id);
 
             serviceMock.Verify(s => s.AddAsync(order), Times.Once);
-            mapperMock.Verify(m => m.CustomMapOrderDtoToOrder(orderDto), Times.Once);
+            mapperMock.Verify(m => m.ToEntity(orderDto), Times.Once);
         }
     }
 }

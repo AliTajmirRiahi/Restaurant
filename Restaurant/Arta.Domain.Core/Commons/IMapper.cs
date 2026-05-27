@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Arta.Domain.Core.Commons
 {
-    public interface IMapper
+    // Generic interface for mapping between two types
+    public interface IMapper<TSource, TDestination>
     {
+        TDestination ToEntity(TSource source);
+        TSource ToDto(TDestination destination);
     }
 }

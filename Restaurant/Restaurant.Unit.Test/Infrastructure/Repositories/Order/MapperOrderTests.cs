@@ -1,10 +1,6 @@
 ﻿using Restaurant.Domain.Contract.Order;
 using Restaurant.Domain.Order;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Restaurant.Domain.Order.Mappers;
 
 namespace Restaurant.Unit.Test.Infrastructure.Repositories
 {
@@ -14,7 +10,7 @@ namespace Restaurant.Unit.Test.Infrastructure.Repositories
         public void CustomMapOrderDtoToOrder_Should_Map_All_Properties_And_Items()
         {
             // Arrange
-            var mapper = new Mapper();
+            var mapper = new MapperOrder();
             var orderDto = new OrderDto
             {
                 CustomerId = 1,
@@ -27,7 +23,7 @@ namespace Restaurant.Unit.Test.Infrastructure.Repositories
             };
 
             // Act
-            var order = mapper.CustomMapOrderDtoToOrder(orderDto);
+            var order = mapper.ToEntity(orderDto);
 
             // Assert
             Assert.Equal(orderDto.CustomerId, order.CustomerId);
@@ -48,13 +44,13 @@ namespace Restaurant.Unit.Test.Infrastructure.Repositories
         public void CustomMapOrderToOrderDto_Should_Map_All_Properties_And_Items()
         {
             // Arrange
-            var mapper = new Mapper();
+            var mapper = new MapperOrder();
             var order = new Order(1, 10);
             order.AddItem(100, 2, 50);
             order.AddItem(101, 1, 30);
 
             // Act
-            var orderDto = mapper.CustomMapOrderToOrderDto(order);
+            var orderDto = mapper.ToDto(order);
 
             // Assert
             Assert.Equal(order.CustomerId, orderDto.CustomerId);
