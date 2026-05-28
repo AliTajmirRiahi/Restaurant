@@ -6,29 +6,56 @@ using System.Threading.Tasks;
 
 namespace Arta.Base.Core.ApiResults
 {
+    /// <summary>
+    /// A unified wrapper for all API responses to ensure consistency.
+    /// </summary>
+    /// <typeparam name="T">The type of the data payload.</typeparam>
     public class ApiResult<T>
     {
-        // وضعیت موفقیت یا شکست
+        /// <summary>
+        /// Indicates whether the request was processed successfully.
+        /// </summary>
         public bool Success { get; set; }
 
-        // داده برگشتی با نوع مشخص
+        /// <summary>
+        /// The actual data returned by the API.
+        /// </summary>
         public T? Payload { get; set; }
 
-        // زمان تولید پاسخ
+        /// <summary>
+        /// The UTC timestamp when the response was generated.
+        /// </summary>
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-        // اطلاعات Pagination برای لیست‌ها
+        /// <summary>
+        /// Total number of items available (used for paginated lists).
+        /// </summary>
         public int? TotalCount { get; set; }
+
+        /// <summary>
+        /// Current page index.
+        /// </summary>
         public int? Page { get; set; }
+
+        /// <summary>
+        /// Number of items per page.
+        /// </summary>
         public int? PageSize { get; set; }
 
-        //// شناسه‌ی یکتا برای دنبال کردن درخواست در لاگ‌ها
-        //public string? CorrelationId { get; set; }
-
-        // پیام‌های هشدار غیر از خطا
+        /// <summary>
+        /// A collection of non-critical warning messages.
+        /// </summary>
         public IEnumerable<string>? Warnings { get; set; }
 
-        // سازنده‌های کمک‌کننده
+        /// <summary>
+        /// Creates a successful API result.
+        /// </summary>
+        /// <param name="payload">The data to return.</param>
+        /// <param name="totalCount">Optional total record count for pagination.</param>
+        /// <param name="page">Optional current page number.</param>
+        /// <param name="pageSize">Optional page size.</param>
+        /// <param name="warnings">Optional list of warnings.</param>
+        /// <returns>A structured API result.</returns>
         public static ApiResult<T> Ok(
             T payload,
             int? totalCount = null,
@@ -48,3 +75,4 @@ namespace Arta.Base.Core.ApiResults
         }
     }
 }
+

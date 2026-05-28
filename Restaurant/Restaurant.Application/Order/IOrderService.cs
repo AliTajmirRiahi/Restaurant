@@ -1,4 +1,5 @@
-﻿using Restaurant.Domain.Order;
+﻿using Restaurant.Domain.Contract.Order;
+using Restaurant.Domain.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Restaurant.Application
 {
     public interface IOrderService 
     {
-        public Task<Guid> AddAsync(Order order);
+        public Task<Guid> AddAsync(OrderDto order);
+        public Task<OrderDto> GetAsync(Guid id);
     }
 }

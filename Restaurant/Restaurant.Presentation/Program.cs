@@ -1,6 +1,8 @@
 using Microsoft.OpenApi;
 using Restaurant.Presentation;
 using System.Runtime.CompilerServices;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 
 [assembly: InternalsVisibleTo("Restaurant.Integration.Test")]
 
@@ -24,6 +26,25 @@ builder.Services.AddControllers();
 // OpenAPI (.NET 8–10 built-in)
 // -------------------------------------------------------
 builder.Services.AddOpenApi(); // exposes /openapi/v1.json
+
+// API Versioning
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.ReportApiVersions = true;
+
+        // Choose ONE of these readers (uncomment one):
+        options.ApiVersionReader = new UrlSegmentApiVersionReader();
+        // options.ApiVersionReader = new QueryStringApiVersionReader("api-version");
+        // options.ApiVersionReader = new HeaderApiVersionReader("X-Api-Version");
+    })
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
 
 // Swagger (Swashbuckle - existing setup)
 builder.Services.AddEndpointsApiExplorer();
@@ -104,8 +125,16 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(new Swashbuckle.AspNetCore.Swagger.SwaggerOptions()
+    {
+        OpenApiVersion = OpenApiSpecVersion.OpenApi3_1
+    });
+    app.UseSwaggerUI(options =>
+    {
+        // Show diffrent versions in Swagger's drop down 
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant V1 Docs");
+        //options.SwaggerEndpoint("/swagger/v2/swagger.json", "V2 Docs");
+    });
 }
 
 // Built-in OpenAPI endpoint (available in all environments)

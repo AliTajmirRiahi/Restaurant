@@ -10,11 +10,26 @@ namespace Restaurant.Domain.Order.Mappers
         // Auto-generated mapping for simple properties
         private partial OrderDto MapToDto(Order order);
 
-        public OrderDto ToDto(Order order) => MapToDto(order);
+        private readonly IMapperOrderItem _itemMapper;
+
+        public MapperOrder(IMapperOrderItem itemMapper) 
+        {
+            _itemMapper = itemMapper;
+        }
+
+        public OrderDto ToDto(Order order)
+        {
+            //1. Create a Order Dto 
+            var dto = MapToDto(order);
+
+            //2.Map Items Dto 
+            dto.Items = [.. order.Items.Select(_itemMapper.ToDto)];
+
+            return dto;
+        }
 
         public Order ToEntity(OrderDto dto)
         {
-            // English comments: 
             // 1. Create the aggregate root
             var order = new Order(dto.CustomerId, dto.TableId);
 

@@ -1,5 +1,6 @@
 ﻿using Arta.Domain.Core.Commons.Enums;
 using Arta.Domain.Core.Model;
+using Microsoft.EntityFrameworkCore;
 using Restaurant.Application;
 using Restaurant.Domain.Order;
 using Restaurant.Infrastructure.Persistence;
@@ -55,9 +56,11 @@ namespace Restaurant.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<Order?> GetByIdAsync(Guid id)
+        public async Task<Order?> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await _dbContext.Orders
+                                    .Include(p => p.Items)
+                                    .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public Task<IReadOnlyList<Order>> GetByStatusAsync(Enums.OrderStatus status)
